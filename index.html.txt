@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>CivilTech Report Tracking Portal</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f7fa;
+    margin:0;
+}
+
+.header{
+    background:#003366;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.logo{
+    height:70px;
+}
+
+.container{
+    max-width:800px;
+    margin:30px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0px 0px 10px rgba(0,0,0,0.1);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    font-size:16px;
+}
+
+button{
+    margin-top:15px;
+    padding:12px 20px;
+    background:#003366;
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#0055aa;
+}
+
+.card{
+    margin-top:25px;
+    background:#f9f9f9;
+    padding:20px;
+    border-radius:8px;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid #ddd;
+}
+
+.download-btn{
+    display:inline-block;
+    background:#28a745;
+    color:white;
+    text-decoration:none;
+    padding:10px 15px;
+    border-radius:5px;
+    margin-top:15px;
+}
+
+.status{
+    font-weight:bold;
+    color:green;
+}
+
+.footer{
+    text-align:center;
+    margin-top:30px;
+    padding:15px;
+    color:#777;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <img src="logo.png" class="logo">
+    <h1>CivilTech India Pvt. Ltd.</h1>
+    <p>NABL Accredited Testing Laboratory</p>
+</div>
+
+<div class="container">
+
+    <h2>Track Your Report</h2>
+
+    <input
+        type="text"
+        id="report"
+        placeholder="Enter Report Number">
+
+    <button onclick="trackReport()">
+        Track Report
+    </button>
+
+    <div id="result"></div>
+
+</div>
+
+<div class="footer">
+© CivilTech India Pvt. Ltd.
+</div>
+
+<script>
+
+function trackReport(){
+
+    let report =
+    document.getElementById("report").value.trim();
+
+    if(report==""){
+        alert("Please enter report number");
+        return;
+    }
+
+    fetch(
+    "https://script.google.com/macros/s/AKfycby_WtawD8tld0EDiL0L8nH_ekOk_nNdwvky3xWu5fKOfn5JUIK0NVdkx3MyMiZg45uZ/exec"+encodeURIComponent(report)
+    )
+
+    .then(response=>response.json())
+
+    .then(data=>{
+
+        if(data.error){
+
+            document.getElementById("result").innerHTML=
+            "<div class='card'><h3>Report Not Found</h3></div>";
+
+            return;
+        }
+
+        document.getElementById("result").innerHTML=
+        `
+        <div class="card">
+
+        <div class="row">
+            <b>Report No</b>
+            <span>${data.reportNo}</span>
+        </div>
+
+        <div class="row">
+            <b>Client</b>
+            <span>${data.client}</span>
+        </div>
+
+        <div class="row">
+            <b>Project</b>
+            <span>${data.project}</span>
+        </div>
+
+        <div class="row">
+            <b>Test Type</b>
+            <span>${data.test}</span>
+        </div>
+
+        <div class="row">
+            <b>Status</b>
+            <span class="status">${data.status}</span>
+        </div>
+
+        <div class="row">
+            <b>Expected Completion</b>
+            <span>${data.expected}</span>
+        </div>
+
+        <div class="row">
+            <b>Report Date</b>
+            <span>${data.reportDate}</span>
+        </div>
+
+        <a
+        href="${data.reportLink}"
+        target="_blank"
+        class="download-btn">
+        Download Report
+        </a>
+
+        </div>
+        `;
+    })
+
+    .catch(error=>{
+
+        document.getElementById("result").innerHTML=
+        "<div class='card'><h3>Error Connecting To Server</h3></div>";
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
